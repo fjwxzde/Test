@@ -1,0 +1,25 @@
+name: 测试终端
+
+on:
+  workflow_dispatch:
+
+jobs:
+  auto-pack-releases:
+    runs-on: windows-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 配置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: bash吗
+        run: |
+          echo $SHELL
+
+      - name: PowerShell吗
+        run: |
+          $PSVersionTable.PSVersion
