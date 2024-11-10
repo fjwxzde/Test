@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Add or remove label based on auto-merge state
         env:
@@ -32,4 +32,5 @@ jobs:
               gh pr edit $PR_NUMBER --remove-label "auto-merge-enabled"
             else
               echo "[WARNING] 未找到 'DEV-已启用自动合并' 标签, 跳过此步"
+            fi
           fi
