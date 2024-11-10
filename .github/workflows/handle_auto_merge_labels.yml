@@ -21,6 +21,8 @@ jobs:
           PR_NUMBER=${{ github.event.pull_request.number }}
           AUTO_MERGE_ENABLED=$(gh pr view $PR_NUMBER --json autoMergeRequest -q ".autoMergeRequest")
 
+          echo "[TEST] $AUTO_MERGE_ENABLED"
+
           if [ "$AUTO_MERGE_ENABLED" == "true" ]; then
             echo "[INFO] 已启用自动合并, 正在添加 'DEV-已启用自动合并' 标签..."
             gh pr edit $PR_NUMBER --add-label "DEV-已启用自动合并"
