@@ -31,7 +31,7 @@ jobs:
             LABEL_EXISTS=$(gh pr view $PR_NUMBER --json labels -q ".labels | map(.name) | contains([\"DEV-已启用自动合并\"])")
             if [ "$LABEL_EXISTS" == "true" ]; then
               echo "[INFO] 找到 'DEV-已启用自动合并' 标签, 正在移除..."
-              gh pr edit $PR_NUMBER --remove-label "auto-merge-enabled"
+              gh pr edit $PR_NUMBER --remove-label "DEV-已启用自动合并"
             else
               echo "[WARNING] 未找到 'DEV-已启用自动合并' 标签, 跳过此步"
             fi
