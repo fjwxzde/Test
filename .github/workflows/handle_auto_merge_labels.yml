@@ -19,11 +19,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
-          AUTO_MERGE_ENABLED=$(gh pr view $PR_NUMBER --json autoMergeRequest -q ".autoMergeRequest")
+          response=$(gh pr view $PR_NUMBER --json autoMergeRequest)
+          AUTO_MERGE_ENABLED=$(echo "$response" | grep -oP '"autoMergeRequest":\s*\K[^,}]*')
 
-          echo "[TEST] $AUTO_MERGE_ENABLED"
-
-          if [ "$AUTO_MERGE_ENABLED" == "true" ]; then
+          if [ "$AUTO_MERGE_ENABLED" != "null" ]; then
             echo "[INFO] 已启用自动合并, 正在添加 'DEV-已启用自动合并' 标签..."
             gh pr edit $PR_NUMBER --add-label "DEV-已启用自动合并"
           else
@@ -31,7 +30,7 @@ jobs:
             LABEL_EXISTS=$(gh pr view $PR_NUMBER --json labels -q ".labels | map(.name) | contains([\"DEV-已启用自动合并\"])")
             if [ "$LABEL_EXISTS" == "true" ]; then
               echo "[INFO] 找到 'DEV-已启用自动合并' 标签, 正在移除..."
-              gh pr edit $PR_NUMBER --remove-label "DEV-已启用自动合并"
+              gh pr edit $PR_NUMBER --remove-label "auto-merge-enabled"
             else
               echo "[WARNING] 未找到 'DEV-已启用自动合并' 标签, 跳过此步"
             fi
