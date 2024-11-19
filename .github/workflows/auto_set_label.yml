@@ -47,5 +47,6 @@ jobs:
                 NEW_LABELS="需要分类"
             fi
             gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label "$NEW_LABELS"
-            gh issue comment "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --body "此 Issue/PR 已自动分类标签\nLabels: $NEW_LABELS"
+            gh issue comment "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --body "此 Issue/PR 已自动分类标签 \
+            Labels: $NEW_LABELS"
           fi
