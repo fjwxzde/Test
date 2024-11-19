@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - name: Set labels for Issues and PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           # 获取 Issue 或 PR 的标题和正文并将标题和正文 转换为小写
           TITLE=$(echo "${{ github.event.issue.title }}" | tr '[:upper:]' '[:lower:]')
