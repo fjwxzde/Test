@@ -74,17 +74,15 @@ jobs:
             # 判断是否有冲突标签
             if [ ${#conflict_labels[@]} -gt 0 ]; then
               comment="此 Issue/PR 自动分类时发现标签冲突：${conflict_labels[*]}，请检查并手动修改标签。"
+              # 如果有冲突标签，避免自动添加分类标签，注释会提醒用户
             else
-              # 如果没有冲突标签，设定分类注释
+              # 如果没有冲突标签，设定分类注释并添加标签
               if [ ${#labels[@]} -gt 0 ]; then
                 comment="此 Issue/PR 已自动分类标签：${labels[*]}"
+                gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label "$(IFS=,; echo "${labels[*]}")"
               fi
             fi
 
-            # 执行标签添加和评论操作
-            if [ ${#labels[@]} -gt 0 ]; then
-              gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label "$(IFS=,; echo "${labels[*]}")"
-            fi
-
+            # 添加评论
             gh issue comment "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --body "$comment"
           fi
