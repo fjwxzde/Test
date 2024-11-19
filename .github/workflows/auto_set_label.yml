@@ -45,7 +45,7 @@ jobs:
             )
 
             # 默认分类为无法分类
-            label="无法分类"
+            label="Dev-需要注意"
             comment="无法为此 Issue/PR 自动分类标签"
 
             # 遍历标签规则并匹配
