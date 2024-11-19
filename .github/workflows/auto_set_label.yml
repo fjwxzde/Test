@@ -2,16 +2,16 @@ name: Auto Label Issues and PRs
 
 on:
   issues:
-    types: [opened]  # 监听 Issue 创建
+    types: [opened] # 监听 Issue 创建
   pull_request:
-    types: [opened]  # 监听 PR 创建
+    types: [opened] # 监听 PR 创建
 
 jobs:
   label:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set labels for Issues and PRs
+      - name: 为 Issue/PR 自动设置标签
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -45,20 +45,46 @@ jobs:
             )
 
             # 默认分类为无法分类
-            label="Dev-需要注意"
+            labels=()
+            conflict_labels=()
             comment="无法为此 Issue/PR 自动分类标签"
 
             # 遍历标签规则并匹配
             for label_key in "${!label_rules[@]}"; do
               if echo "$TITLE $BODY" | grep -q -E "${label_rules[$label_key]}"; then
-                label="$label_key"
-                comment="此 Issue/PR 已自动分类标签"
-                break
+                # 如果匹配到标签，加入到标签数组中
+                labels+=("$label_key")
               fi
             done
 
-            # 添加标签和评论
-            gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label "$label"
+            # 处理标签冲突
+            # 这里定义哪些标签不能同时存在，排除冲突标签组合
+            conflict_rules=(
+              "优化 bug"
+              "新功能 bug"
+            )
+
+            for conflict_rule in "${conflict_rules[@]}"; do
+              label_pair=($conflict_rule)
+              if [[ " ${labels[@]} " =~ " ${label_pair[0]} " ]] && [[ " ${labels[@]} " =~ " ${label_pair[1]} " ]]; then
+                conflict_labels+=("${label_pair[0]} 和 ${label_pair[1]}")
+              fi
+            done
+
+            # 判断是否有冲突标签
+            if [ ${#conflict_labels[@]} -gt 0 ]; then
+              comment="此 Issue/PR 自动分类时发现标签冲突：${conflict_labels[*]}，请检查并手动修改标签。"
+            else
+              # 如果没有冲突标签，设定分类注释
+              if [ ${#labels[@]} -gt 0 ]; then
+                comment="此 Issue/PR 已自动分类标签：${labels[*]}"
+              fi
+            fi
+
+            # 执行标签添加和评论操作
+            if [ ${#labels[@]} -gt 0 ]; then
+              gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label "$(IFS=,; echo "${labels[*]}")"
+            fi
+
             gh issue comment "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --body "$comment"
           fi
-
