@@ -1,0 +1,49 @@
+name: Auto Label Issues and PRs
+
+on:
+  issues:
+    types: [opened]  # 监听 Issue 创建
+  pull_request:
+    types: [opened]  # 监听 PR 创建
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set labels for Issues and PRs
+        run: |
+          # 获取 Issue 或 PR 的标题和正文并将标题和正文 转换为小写
+          TITLE=$(echo "${{ github.event.issue.title }}" | tr '[:upper:]' '[:lower:]')
+          BODY=$(echo "${{ github.event.issue.body }}" | tr '[:upper:]' '[:lower:]')
+          PR_TITLE=$(echo "${{ github.event.pull_request.title }}" | tr '[:upper:]' '[:lower:]')
+          PR_BODY=$(echo "${{ github.event.pull_request.body }}" | tr '[:upper:]' '[:lower:]')
+
+          # 判断是否是 PR，如果是 PR，使用 PR 的标题和正文来设置标签 (即使后面统一用TITLE/BODY)
+          if [ ! -z "$PR_TITLE" ]; then
+            TITLE="$PR_TITLE"
+            BODY="$PR_BODY"
+          fi
+
+          # 获取现有标签
+          EXISTING_LABELS=$(gh issue view "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --json labels -q '.labels | .[].name')
+
+          # 检查是否已有标签，如果没有标签则先添加“需要分类”标签
+          if [ -z "$EXISTING_LABELS" ]; then
+            gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label "需要分类"
+            # 定义标签规则
+            NEW_LABELS=""
+            if echo "$TITLE $BODY" | grep -q -e 'pref' -e '优化' -e 'optimize'; then
+                NEW_LABELS="优化"
+            elif echo "$TITLE $BODY" | grep -q -e 'feat' -e '新功能' -e '新增' -e 'add' -e 'new'; then
+                NEW_LABELS="新功能"
+            elif echo "$TITLE $BODY" | grep -q -e '缺少' -e '少了'; then
+                NEW_LABELS="缺少"
+            elif echo "$TITLE $BODY" | grep -q -e 'workflow' -e '工作流' -e '自动化' -e 'action'; then
+                NEW_LABELS="工作流"
+            else
+                NEW_LABELS="需要分类"
+            fi
+            gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label "$NEW_LABELS"
+            gh issue comment "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --body "此 Issue/PR 已自动分类标签\nLabels: $NEW_LABELS"
+          fi
