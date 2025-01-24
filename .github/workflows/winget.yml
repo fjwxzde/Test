@@ -1,0 +1,18 @@
+name: 测试
+
+on:
+  workflow_dispatch:
+
+jobs:
+  validation-domain:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install winget Test
+      uses: DuckDuckStudio/install-winget@test
+
+    - name: Test
+      shell: pwsh
+      run: |
+        winget --info
+        winget search DuckStudio
