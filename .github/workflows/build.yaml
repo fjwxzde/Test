@@ -14,6 +14,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          repository: 'DuckDuckStudio/Fufu_Tools'
+          
       - name: 清理待发布标签
         if: ${{ github.event_name != 'workflow_dispatch' }}
         shell: bash
