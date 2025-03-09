@@ -194,32 +194,9 @@ jobs:
       - name: 清理待发布标签
         if: ${{ github.event_name != 'workflow_dispatch' }}
         shell: bash
+        env:
+          PYTHONIOENCODING: utf-8
+          GH_TOKEN: ${{ github.token }}
         run: |
-          # 获取所有的 Issue 和 PR（包括打开的）
-          issues_and_prs=$(gh issue list --state open --json number,title,labels)
+          python "自动化脚本/清理待发布标签.py" "${{ env.VERSION }}"
 
-          # 遍历每个 Issue/PR
-          for issue in $(echo "$issues_and_prs" | jq -r '.[] | @base64'); do
-            _jq() {
-              echo ${issue} | base64 --decode | jq -r ${1}
-            }
-
-            # 判断是否有“待发布”标签
-            labels=$(_jq '.labels | map(.name) | .[]')
-            if [[ "$labels" == *"待发布"* ]]; then
-              issue_number=$(_jq '.number')
-              issue_title=$(_jq '.title')
-
-              # 移除“待发布”标签，添加“DEV-已完成”标签
-              gh issue edit "$issue_number" --remove-label "待发布" --add-label "DEV-已完成"
-
-              # 如果是 Issue，留下一条评论并关闭它
-              if [[ $(_jq '.pullRequest') == "null" ]]; then
-                # 留下评论
-                gh issue comment "$issue_number" --body "此议题的相关修改已在[版本号](https://github.com/Fufu-Tools/Fufu_Tools/releases/tag/v${{ env.VERSION }})中发布"
-
-                # 关闭 Issue
-                gh issue close "$issue_number"
-              fi
-            fi
-          done
