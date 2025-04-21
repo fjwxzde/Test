@@ -1,4 +1,4 @@
-name: TopalaSoftwareSolutions.SIW 测试
+name: aiko-chan-ai.DiscordBotClient 测试
 
 on:
   workflow_dispatch:
@@ -27,8 +27,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |-
-          komac list-versions TopalaSoftwareSolutions.SIW | Sort-Object -Descending | `
+          komac list-versions aiko-chan-ai.DiscordBotClient | Sort-Object -Descending | `
           ForEach-Object {
-            winget download -s winget -e --id TopalaSoftwareSolutions.SIW -d ./Temp -v $_;
+            winget download -s winget -e --id aiko-chan-ai.DiscordBotClient -d ./Temp -v $_;
             Write-Output ""
           }
