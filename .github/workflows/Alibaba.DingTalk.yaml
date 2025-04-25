@@ -1,4 +1,4 @@
-name: aiko-chan-ai.DiscordBotClient 测试
+name: Alibaba.DingTalk 测试
 
 on:
   workflow_dispatch:
@@ -27,8 +27,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |-
-          komac list-versions aiko-chan-ai.DiscordBotClient | Sort-Object -Descending | `
+          winget --info
+          echo "====================="
+          komac list-versions Alibaba.DingTalk | Sort-Object -Descending | `
           ForEach-Object {
-            winget download -s winget -e --id aiko-chan-ai.DiscordBotClient -d ./Temp -v $_;
+            winget download -s winget -e --id Alibaba.DingTalk -d ./Temp -v $_;
             Write-Output ""
           }
