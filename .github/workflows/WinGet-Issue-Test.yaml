@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  on-windows:
+  test:
     runs-on: windows-latest
 
     steps:
@@ -17,8 +17,8 @@ jobs:
 
       - name: 尝试复现
         run: |
-          winget install SublimeHQ.SublimeMerge
-          winget uninstall SublimeHQ.SublimeMerge
+          winget install SublimeHQ.SublimeMerge -s winget
+          winget uninstall SublimeHQ.SublimeMerge -s winget
         continue-on-error: true
 
       - name: 上传日志
