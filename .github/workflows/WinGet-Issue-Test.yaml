@@ -21,8 +21,12 @@ jobs:
           winget uninstall SublimeHQ.SublimeMerge -s winget
         continue-on-error: true
 
+      - name: Test - 日志绝对路径
+        shell: cmd
+        run: echo %LOCALAPPDATA%\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\DiagOutputDir
+
       - name: 上传日志
         uses: actions/upload-artifact@v4
         with:
           name: winget-log
-          path: ${{ env.LOCALAPPDATA }}/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/DiagOutputDir
+          path: 
