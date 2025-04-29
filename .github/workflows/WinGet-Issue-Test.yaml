@@ -1,0 +1,28 @@
+name: SublimeHQ.SublimeMerge 测试
+
+on:
+  workflow_dispatch:
+
+jobs:
+  on-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Install winget
+        uses: Cyberboss/install-winget@v1
+
+      - name: 基本信息
+        run: |
+          winget --info
+
+      - name: 尝试复现
+        run: |
+          winget install SublimeHQ.SublimeMerge
+          winget uninstall SublimeHQ.SublimeMerge
+        continue-on-error: true
+
+      - name: 上传日志
+        uses: actions/upload-artifact@v4
+        with:
+          name: winget-log
+          path: "%LOCALAPPDATA%\\Packages\\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\\LocalState\\DiagOutputDir"
