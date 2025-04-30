@@ -1,10 +1,14 @@
-name: Alibaba.DingTalk 测试
+name: 可用版本测试
 
 on:
   workflow_dispatch:
+    inputs:
+      package-id:
+        description: "软件包标识符"
+        required: true
 
 jobs:
-  on-windows:
+  ok-version-test:
     runs-on: windows-latest
 
     steps:
@@ -29,8 +33,8 @@ jobs:
         run: |-
           winget --info
           echo "====================="
-          komac list-versions Alibaba.DingTalk | Sort-Object -Descending | `
+          komac list-versions ${{ inputs.package-id }} | Sort-Object -Descending | `
           ForEach-Object {
-            winget download -s winget -e --id Alibaba.DingTalk -d ./Temp -v $_;
+            winget download -s winget -e --id ${{ inputs.package-id }} -d ./Temp -v $_;
             Write-Output ""
           }
