@@ -12,7 +12,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Install winget
+      - name: 安装 WinGet
         uses: Cyberboss/install-winget@v1
 
       - name: 设置 Rust
@@ -26,7 +26,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Run Test
+      - name: 运行测试
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ github.token }}
