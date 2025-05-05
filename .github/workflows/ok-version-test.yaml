@@ -31,6 +31,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |-
+          winget source update winget
+          # 先更新源，避免下载进度条塞满日志
           winget --info
           echo "====================="
           komac list-versions ${{ inputs.package-id }} | Sort-Object -Descending | `
