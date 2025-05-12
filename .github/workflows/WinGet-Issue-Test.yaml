@@ -17,7 +17,7 @@ jobs:
 
       - name: 尝试复现
         run: |
-          winget install ShiningLight.OpenSSL.Dev -s winget -- version 3.3.2
+          winget install ShiningLight.OpenSSL.Dev -s winget --version 3.3.2
           winget upgrade ShiningLight.OpenSSL.Dev -s winget
         continue-on-error: true
 
