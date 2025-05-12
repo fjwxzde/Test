@@ -1,4 +1,4 @@
-name: SublimeHQ.SublimeMerge 测试
+name: 议题测试
 
 on:
   workflow_dispatch:
@@ -17,15 +17,15 @@ jobs:
 
       - name: 尝试复现
         run: |
-          winget install SublimeHQ.SublimeMerge -s winget
-          winget uninstall SublimeHQ.SublimeMerge -s winget
+          winget install ShiningLight.OpenSSL.Dev -s winget -- version 3.3.2
+          winget upgrade ShiningLight.OpenSSL.Dev -s winget
         continue-on-error: true
 
-      - name: 尝试其他命令
-        run: |
-          winget uninstall --id SublimeHQ.SublimeMerge -s winget 
-          winget uninstall SublimeMerge -s winget 
-        continue-on-error: true
+      #- name: 尝试其他命令
+      #  run: |
+      #    winget uninstall --id SublimeHQ.SublimeMerge -s winget 
+      #    winget uninstall SublimeMerge -s winget 
+      #  continue-on-error: true
 
       # - name: Test - 日志绝对路径
       #   shell: cmd
