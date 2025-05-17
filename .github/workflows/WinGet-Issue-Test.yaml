@@ -17,8 +17,8 @@ jobs:
 
       - name: 尝试复现
         run: |
-          winget install ShiningLight.OpenSSL.Dev -s winget --version 3.3.2
-          winget upgrade ShiningLight.OpenSSL.Dev -s winget
+          winget install DuoSecurity.Duo2FAAuthenticationforWindows -s winget --version 5.0.0.312 --accept-source-agreements --accept-package-agreements
+          winget upgrade DuoSecurity.Duo2FAAuthenticationforWindows -s winget --accept-source-agreements --accept-package-agreements
         continue-on-error: true
 
       #- name: 尝试其他命令
