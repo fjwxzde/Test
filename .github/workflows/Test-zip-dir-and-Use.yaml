@@ -1,4 +1,4 @@
-name: 获取安装程序文件
+name: 分析归档
 
 on:
   workflow_dispatch:
@@ -6,56 +6,34 @@ on:
       file:
         description: '需要获取的文件 URL'
         required: true
-      file_type:
-        description: '文件的后缀名'
-        required: false
 
 permissions:
   contents: read
 
 jobs:
   download-and-upload:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-    - name: 提取文件扩展名
-      id: extract_extension
-      shell: bash
-      run: |
-        url="${{ github.event.inputs.file }}"
-        specified_extension="${{ github.event.inputs.file_type }}"
+      - name: 下载文件
+        shell: pwsh
+        run: |
+          # 使用 PowerShell 下载文件
+          Invoke-WebRequest -Uri "${{ github.event.inputs.file }}" -OutFile "installer.zip"
 
-        # 如果用户指定了文件类型，则使用指定的类型
-        if [ -n "$specified_extension" ]; then
-          extension="$specified_extension"
-        else
-          # 否则从 URL 中提取扩展名
-          extension="${url##*.}"
+      - name: 获取 SHA256
+        shell: pwsh
+        run: |
+          Get-FileHash -Path "installer.zip"
 
-          # 如果 URL 中没有扩展名，则默认使用 .exe
-          if [ "$extension" == "$url" ]; then
-            extension="exe"
-          fi
-        fi
+      - name: 解压归档
+        shell: pwsh
+        run: |
+          7z x installer.zip
+          # 列出解压缩的文件
+          Get-ChildItem -Path .
 
-        echo "file_extension=$extension" >> $GITHUB_ENV
-
-    - name: 下载文件
-      shell: bash
-      run: |
-        # 使用提取或指定的扩展名下载文件
-        wget ${{ github.event.inputs.file }} -O installer.${{ env.file_extension }}
-
-    - name: 获取 SHA256
-      # tr 用于将小写字母转换为大写字母
-      shell: bash
-      run: |
-        echo "sha256=$(sha256sum installer.${{ env.file_extension }} | tr 'a-f' 'A-F')" >> $GITHUB_ENV
-        sha256sum installer.${{ env.file_extension }} | tr 'a-f' 'A-F'
-
-    - name: 解压归档
-      shell: bash
-      if: ${{ env.file_extension == 'zip' }}
-      run: |
-        7z x installer.zip
-        ls -l
+      - name: 测试运行
+        shell: pwsh
+        run: |
+          spyserver.exe --version
