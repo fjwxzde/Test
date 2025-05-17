@@ -36,4 +36,5 @@ jobs:
       - name: 测试运行
         shell: pwsh
         run: |
-          spyserver.exe --version
+          & .\spyserver.exe --version
+          & .\spyserver.exe --help
