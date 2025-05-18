@@ -50,7 +50,7 @@ jobs:
       - name: 测试 - 验证目录
         shell: pwsh
         run: |-
-          Write-Host "需要测试的文件夹: $folder"
+          Write-Host "需要测试的文件夹: ${{ env.folder }}"
 
       - name: 上传日志
         uses: actions/upload-artifact@v4
