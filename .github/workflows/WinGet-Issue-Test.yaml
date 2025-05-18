@@ -12,8 +12,7 @@ jobs:
         uses: Cyberboss/install-winget@v1
 
       - name: WinGet 基本信息
-        run: |
-          winget --info
+        run: winget --info
 
       - name: 尝试复现
         run: |
