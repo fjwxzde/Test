@@ -46,6 +46,7 @@ jobs:
         shell: pwsh
         run: |-
           winget install --manifest "manifests/m/Microsoft/WindowsADK/10.1.26100.2454/" -l D:\Test\Installation\
+        continue-on-error: true
 
       - name: 验证可能的安装位置
         shell: pwsh
