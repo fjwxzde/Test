@@ -45,6 +45,8 @@ jobs:
       - name: 测试安装
         shell: pwsh
         run: |-
+          New-Item -Path D:\Test -ItemType Directory
+          New-Item -Path D:\Test\Installation -ItemType Directory
           winget install --manifest "manifests/m/Microsoft/WindowsADK/10.1.26100.2454/" -l D:\Test\Installation\
         continue-on-error: true
 
