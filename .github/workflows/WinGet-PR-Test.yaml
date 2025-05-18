@@ -17,7 +17,9 @@ jobs:
 
       - name: WinGet 基本信息
         shell: pwsh
-        run: winget --info
+        run: |-
+          winget settings --enable LocalManifestFiles
+          winget --info
 
       - name: 签出上游
         uses: actions/checkout@v4
@@ -40,17 +42,15 @@ jobs:
           gh repo set-default microsoft/winget-pkgs
           gh pr checkout "${{ inputs.PR }}"
 
-      - name: 对比差异
-        # 得知需要测试的修改所在文件夹，并存到 GitHub_ENV 给后续 step 调用，以便后续 winget install --manifest <修改的文件夹>
+      - name: 测试安装
         shell: pwsh
         run: |-
-          $folder = git diff --name-only HEAD^ HEAD
-          echo "folder=$folder" >> $GITHUB_ENV
+          winget install --manifest "manifests/m/Microsoft/WindowsADK/10.1.26100.2454/" -l D:\Test\Installation\
 
-      - name: 测试 - 验证目录
+      - name: 验证可能的安装位置
         shell: pwsh
         run: |-
-          Write-Host "需要测试的文件夹: ${{ env.folder }}"
+          Get-ChildItem -Path D:\Test\Installation\
 
       - name: 上传日志
         uses: actions/upload-artifact@v4
