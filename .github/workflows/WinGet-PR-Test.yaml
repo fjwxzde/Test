@@ -44,7 +44,7 @@ jobs:
         # 得知需要测试的修改所在文件夹，并存到 GitHub_ENV 给后续 step 调用，以便后续 winget install --manifest <修改的文件夹>
         shell: pwsh
         run: |-
-          $folder = (git diff --name-only HEAD^ HEAD | Select-String -Pattern 'manifests/.*\.json' | ForEach-Object { $_.ToString().Split('/')[1] }) -join ','
+          $folder = git diff --name-only HEAD^ HEAD
           echo "folder=$folder" >> $GITHUB_ENV
 
       - name: 测试 - 验证目录
