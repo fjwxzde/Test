@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       PR:
-        description: 需要测试的 PR 的 ID
+        description: 需要测试的 PR
         required: true
 
 jobs:
@@ -34,6 +34,8 @@ jobs:
 
       - name: 签出 PR
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |- 
           gh repo set-default microsoft/winget-pkgs
           gh pr checkout "${{ inputs.PR }}"
