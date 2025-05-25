@@ -6,6 +6,9 @@ on:
       PR:
         description: 需要测试的 PR
         required: true
+      manifest-path:
+        description: 清单所在目录
+        required: true
 
 jobs:
   test:
@@ -48,7 +51,7 @@ jobs:
           winget uninstall --id Microsoft.WindowsADK -s winget
           New-Item -Path D:\Test -ItemType Directory
           New-Item -Path D:\Test\Installation -ItemType Directory
-          winget install --manifest "manifests/m/Microsoft/WindowsADK/10.1.26100.2454/" -l D:\Test\Installation\
+          winget install --manifest "${{ inputs.manifest-path }}" -l D:\Test\Installation\
         continue-on-error: true
 
       - name: 验证可能的安装位置
