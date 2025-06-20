@@ -16,10 +16,10 @@ jobs:
 
       - name: 尝试复现
         run: |
-          winget install Gyan.FFmpeg -s winget --accept-source-agreements --accept-package-agreements
-          winget list ffmpeg -s winget
-          winget install --id yt-dlp.yt-dlp -s winget --version 2025.04.30 --accept-source-agreements --accept-package-agreements
-          winget update --id yt-dlp.yt-dlp -s winget --accept-source-agreements --accept-package-agreements
+          winget install Gyan.FFmpeg -s winget --accept-source-agreements --accept-package-agreements --verbose
+          winget list ffmpeg -s winget --verbose
+          winget install --id yt-dlp.yt-dlp -s winget --version 2025.04.30 --accept-source-agreements --accept-package-agreements --verbose
+          winget update --id yt-dlp.yt-dlp -s winget --accept-source-agreements --accept-package-agreements --verbose
         continue-on-error: true
 
       #- name: 尝试其他命令
