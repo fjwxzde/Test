@@ -1,19 +1,115 @@
-name: 议题测试
+name: Nightly 构建与发布
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - master
+    paths:
+      - ghv/**
+  workflow_dispatch:
+
+permissions:
+  contents: write # 创建 Release
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  build-nightly:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2022]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+    - name: 检出代码
+      uses: actions/checkout@v6
+      with:
+        repository: DuckDuckStudio/GitHubView
 
-      - name: Test Publish Artifact
-        uses: softprops/action-gh-release@v2.5.0
-        with:
-          # 刚签出的仓库中的 TEST-ARTIFACT
-          files: TEST-ARTIFACT
+    - name: 设置 .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.x
+
+    - name: 设置 Python 3.x
+      uses: actions/setup-python@v6
+      with:
+        python-version: 3.x
+
+    - name: 生成版本号
+      shell: bash
+      run: |
+        echo "NIGHTLY_VERSION=$(date +'%Y.%m.%d').${{ github.run_id }}" >> $GITHUB_ENV
+
+    - name: 更新版本号
+      env:
+        PYTHONIOENCODING: utf-8
+      run: |
+        python "自动化脚本/修改版本号.py" "${{ env.NIGHTLY_VERSION }}"
+
+    - name: 发布
+      run: |
+        dotnet publish ghv/ghv.csproj --configuration Release --output ./output
+        dotnet publish ghv/ghv.csproj --configuration Release --output ./output_SingleFile /p:PublishSingleFile=true /p:PublishTrimmed=true
+
+    - name: 创建发行文件 - Windows
+      if: ${{ runner.os == 'Windows' }}
+      shell: pwsh
+      run: |
+        # 创建Release目录
+        mkdir -p Release
+
+        # 使用7z压缩为zip格式
+        7z a -tzip Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}.zip output/*
+
+        # 创建安装包
+        curl -o "C:\Program Files (x86)\Inno Setup 6\Languages\ChineseSimplified.isl" "https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/Unofficial/ChineseSimplified.isl"
+        iscc installer/Windows.iss
+        iscc installer/SingleFile/Windows.iss
+        move installer/GitHubView-installer.exe Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}-Setup.exe
+        move installer/SingleFile/GitHubView-installer.exe Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}-Setup-SingleFile.exe
+
+        # 单独处理单文件
+        move output_SingleFile/ghv.exe Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}-SingleFile.exe
+
+    - name: 创建发行文件 - Linux
+      if: ${{ runner.os == 'Linux' }}
+      shell: bash
+      run: |
+        # 创建Release目录
+        mkdir -pv Release
+
+        echo "构建tar包..."
+
+        # 使用tar压缩
+        tar -czvf Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}.tar.gz -C output .
+
+        # =======================================================
+        echo "构建DEB包..."
+        mkdir -pv output_SingleFile/usr/local/bin/
+        cp -pv output_SingleFile/ghv output_SingleFile/usr/local/bin/
+
+        # 复制 DEBIAN 控制文件
+        cp -rpv installer/SingleFile/DEBIAN output_SingleFile
+
+        # 生成安装包
+        dpkg --build output_SingleFile ghv.deb
+        mv -v ghv.deb Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}.deb
+
+        # 验证安装包
+        dpkg --info Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}.deb
+        dpkg --contents Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}.deb
+
+        # =======================================================
+        echo "发布单文件..."
+        # 单独处理单文件
+        mv -v output_SingleFile/ghv Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}-SingleFile
+
+    - name: 发布 Nightly 版本
+      uses: softprops/action-gh-release@v2
+      with:
+        name: GitHubView Nightly Release (${{ env.NIGHTLY_VERSION }})
+        tag_name: ${{ env.NIGHTLY_VERSION }}
+        prerelease: true
+        generate_release_notes: true
+        files: |
+          Release/*
