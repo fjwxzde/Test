@@ -20,11 +20,17 @@ jobs:
         os: [ubuntu-latest, windows-2022]
 
     steps:
+    - name: cd
+      run: |
+        cd D:/a/
+        mkdir GitHubView
+        cd GitHubView
+
     - name: 检出代码
       uses: actions/checkout@v6
       with:
         repository: DuckDuckStudio/GitHubView
-        path: D:/a/GitHubView/GitHubView
+        path: GitHubView
 
     - name: 设置 .NET
       uses: actions/setup-dotnet@v5
