@@ -33,7 +33,7 @@ jobs:
       #   run: echo %LOCALAPPDATA%\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\DiagOutputDir
 
       - name: 上传日志
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: winget-log
           path: C:\Users\runneradmin\AppData\Local\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\DiagOutputDir
