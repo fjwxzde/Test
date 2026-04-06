@@ -1,0 +1,48 @@
+name: Test Run
+
+on:
+    workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: 设置 .NET
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
+        with:
+          dotnet-version: 10.x
+
+      - name: 发布
+        shell: pwsh
+        run: dotnet publish ConsoleApp --configuration Release
+
+      - name: (Windows) 添加发布目录到 PATH
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |-
+          $publishPath = Join-Path -Path (Get-Location) -ChildPath 'ConsoleApp/bin/Release/net10.0'
+          echo "PATH=$publishPath;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: (Linux) 添加发布目录到 PATH
+        if: ${{ runner.os == 'Linux' }}
+        shell: bash
+        run: |-
+          echo "PATH=$(pwd)/ConsoleApp/bin/Release/net10.0:$PATH" >> $GITHUB_ENV
+
+      - name: 测试 - help
+        shell: pwsh
+        run: ConsoleApp
