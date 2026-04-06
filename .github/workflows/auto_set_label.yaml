@@ -18,12 +18,16 @@ jobs:
       - name: 为 Issue/PR 自动设置标签
         env:
           GH_TOKEN: ${{ github.token }}
+          GITHUB_EVENT_ISSUE_TITLE: ${{ github.event.issue.title }}
+          GITHUB_EVENT_ISSUE_BODY: ${{ github.event.issue.body }}
+          GITHUB_EVENT_PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+          GITHUB_EVENT_PULL_REQUEST_BODY: ${{ github.event.pull_request.body }}
         run: |
           # 获取 Issue 或 PR 的标题和正文并将标题和正文 转换为小写
-          TITLE=$(echo "${{ github.event.issue.title }}" | tr '[:upper:]' '[:lower:]')
-          BODY=$(echo "${{ github.event.issue.body }}" | tr '[:upper:]' '[:lower:]')
-          PR_TITLE=$(echo "${{ github.event.pull_request.title }}" | tr '[:upper:]' '[:lower:]')
-          PR_BODY=$(echo "${{ github.event.pull_request.body }}" | tr '[:upper:]' '[:lower:]')
+          TITLE=$(echo "${GITHUB_EVENT_ISSUE_TITLE}" | tr '[:upper:]' '[:lower:]')
+          BODY=$(echo "${GITHUB_EVENT_ISSUE_BODY}" | tr '[:upper:]' '[:lower:]')
+          PR_TITLE=$(echo "${GITHUB_EVENT_PULL_REQUEST_TITLE}" | tr '[:upper:]' '[:lower:]')
+          PR_BODY=$(echo "${GITHUB_EVENT_PULL_REQUEST_BODY}" | tr '[:upper:]' '[:lower:]')
 
           # 判断是否是 PR，如果是 PR，使用 PR 的标题和正文来设置标签 (即使后面统一用TITLE/BODY)
           if [ ! -z "$PR_TITLE" ]; then
