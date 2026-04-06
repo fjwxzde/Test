@@ -27,18 +27,18 @@ jobs:
         cd GitHubView
 
     - name: 检出代码
-      uses: actions/checkout@v6
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       with:
         repository: DuckDuckStudio/GitHubView
         path: GitHubView
 
     - name: 设置 .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
       with:
         dotnet-version: 10.x
 
     - name: 设置 Python 3.x
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
       with:
         python-version: 3.x
 
@@ -112,7 +112,7 @@ jobs:
         mv -v output_SingleFile/ghv Release/GitHubView-${{ env.NIGHTLY_VERSION }}-${{ matrix.os }}-SingleFile
 
     - name: 发布 Nightly 版本
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2
       with:
         name: GitHubView Nightly Release (${{ env.NIGHTLY_VERSION }})
         tag_name: ${{ env.NIGHTLY_VERSION }}
