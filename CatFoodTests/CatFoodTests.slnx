@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../DuckStudio.CatFood.Tests/DuckStudio.CatFood.Tests.csproj" Id="87a6e7e3-d6c8-43fe-9022-f2919367f50a" />
+  <Project Path="CatFoodTests.csproj" />
+</Solution>
