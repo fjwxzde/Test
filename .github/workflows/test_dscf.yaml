@@ -3,6 +3,8 @@ name: 测试 DuckStudio.CatFood
 on:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
