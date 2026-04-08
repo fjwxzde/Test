@@ -2,6 +2,11 @@ name: 测试 DuckStudio.CatFood
 
 on:
   workflow_dispatch:
+    inputs:
+      dscf_ref:
+        description: DuckStudio.CatFood 仓库的分支或标签
+        required: true
+        default: deps/dotnet/Spectre.Console/0.55.0
 
 permissions: {}
 
@@ -26,7 +31,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: DuckDuckStudio/DuckStudio.CatFood
-          ref: deps/dotnet/Spectre.Console/0.55.0
+          ref: ${{ github.event.inputs.dscf_ref }}
           path: DuckStudio.CatFood
           persist-credentials: false
 
