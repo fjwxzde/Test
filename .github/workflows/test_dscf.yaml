@@ -37,7 +37,7 @@ jobs:
 
       - name: 打包 DuckStudio.CatFood
         shell: bash
-        run: dotnet pack "DuckStudio.CatFood/src/DuckStudio.CatFood" -c Release
+        run: dotnet build "DuckStudio.CatFood/src/DuckStudio.CatFood" -c Release
 
       - name: 运行 CatFoodTests
         shell: bash
@@ -45,4 +45,4 @@ jobs:
 
       - name: 运行 DuckStudio.CatFood.Tests
         shell: bash
-        run: dotnet test Test/CatFoodTests
+        run: dotnet test "Test/CatFoodTests"
