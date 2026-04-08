@@ -1,0 +1,44 @@
+name: 测试 DuckStudio.CatFood
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: 
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    steps:
+      - name: 签出测试仓库
+        uses: actions/checkout@v6.0.2
+        with:
+          path: Test
+
+      - name: 签出 DuckStudio.CatFood 仓库
+        uses: actions/checkout@v6.0.2
+        with:
+          repository: DuckDuckStudio/DuckStudio.CatFood
+          ref: deps/dotnet/Spectre.Console/0.55.0
+          path: DuckStudio.CatFood
+
+      - name: 设置 .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: 打包 DuckStudio.CatFood
+        shell: bash
+        run: dotnet pack "DuckStudio.CatFood/src/DuckStudio.CatFood" -c Release
+
+      - name: 运行 CatFoodTests
+        shell: bash
+        run: dotnet run --project "Test/CatFoodTests"
+
+      - name: 运行 DuckStudio.CatFood.Tests
+        shell: bash
+        run: dotnet test Test/CatFoodTests
