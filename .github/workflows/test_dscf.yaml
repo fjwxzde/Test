@@ -17,13 +17,13 @@ jobs:
 
     steps:
       - name: 签出测试仓库
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: Test
           persist-credentials: false
 
       - name: 签出 DuckStudio.CatFood 仓库
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: DuckDuckStudio/DuckStudio.CatFood
           ref: deps/dotnet/Spectre.Console/0.55.0
